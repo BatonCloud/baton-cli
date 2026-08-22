@@ -90,10 +90,10 @@ Claude Code · Codex · OpenClaw · Hermes
 
 | | |
 |---|---|
-| **声明你的 agent，也声明你的网络** | 一个运行时就是一份 YAML spec —— 镜像、命令、会话、密钥、健康检查。未知字段会被直接拒绝，而不是悄悄忽略。[spec →](https://dev.baton.wiki/zh/reference/runtime-spec) |
-| **P2P 与 N2N，同一种地址** | `agent@network` 在网络内部解析成 agent 到 agent，跨域时解析成网络到网络。`ssh`、`scp` 和端口转发照常能用。[ADR-0028 →](https://dev.baton.wiki/decisions/0028-ssh-addressing) |
-| **完全去中心化，流量由你自己走** | 节点只**向外**拨出一条连接，自己不监听任何端口。没有哪个节点必须可达，也不用交出 SSH key。[节点跑在哪 →](https://dev.baton.wiki/zh/concepts/where-nodes-run) |
-| **Managed 只做加法，从不做减法** | 代码树里没有任何东西是为了「被关掉」而存在的 —— 没有版本编译标记、没有授权校验、没有 license 开关，一旦出现，CI 直接让构建失败。[ADR-0003 →](https://dev.baton.wiki/decisions/0003-edition-boundary) |
+| **声明你的 agent，也声明你的网络** | 一个运行时就是一份 YAML spec —— 镜像、命令、会话、密钥、健康检查。未知字段会被直接拒绝，而不是悄悄忽略。[详情 →](https://dev.baton.wiki/zh/features/declare-agent-and-network) |
+| **P2P 与 N2N，同一种地址** | `agent@network` 在网络内部解析成 agent 到 agent，跨域时解析成网络到网络。`ssh`、`scp` 和端口转发照常能用。[详情 →](https://dev.baton.wiki/zh/features/p2p-and-n2n) |
+| **完全去中心化，流量由你自己走** | 节点只**向外**拨出一条连接，自己不监听任何端口。没有哪个节点必须可达，也不用交出 SSH key。[详情 →](https://dev.baton.wiki/zh/features/decentralised) |
+| **Managed 只做加法，从不做减法** | 代码树里没有任何东西是为了「被关掉」而存在的 —— 没有版本编译标记、没有授权校验、没有 license 开关，一旦出现，CI 直接让构建失败。[详情 →](https://dev.baton.wiki/zh/features/managed-is-additive) |
 
 ---
 

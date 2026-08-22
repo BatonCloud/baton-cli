@@ -104,10 +104,10 @@ in the path by default (ADR-0031).
 
 | | |
 |---|---|
-| **Declare the agent, declare the network** | A runtime is a YAML spec — image, command, session, secrets, health. Unknown fields are refused rather than quietly ignored. [Spec →](https://dev.baton.wiki/reference/runtime-spec) |
-| **P2P and N2N, one address form** | `agent@network` resolves agent-to-agent inside a network and network-to-network across domains. `ssh`, `scp` and port forwarding keep working. [ADR-0028 →](https://dev.baton.wiki/decisions/0028-ssh-addressing) |
-| **Decentralised, and yours to route** | Nodes dial *out* over one outbound connection and listen on nothing. No node has to be reachable, and no SSH key is handed over. [Where nodes run →](https://dev.baton.wiki/concepts/where-nodes-run) |
-| **Managed is an addition, never a subtraction** | Nothing in the tree exists in order to be switched off — no edition build tags, no entitlement checks, no license gates — and CI fails the build if any appear. [ADR-0003 →](https://dev.baton.wiki/decisions/0003-edition-boundary) |
+| **Declare the agent, declare the network** | A runtime is a YAML spec — image, command, session, secrets, health. Unknown fields are refused rather than quietly ignored. [Detail →](https://dev.baton.wiki/features/declare-agent-and-network) |
+| **P2P and N2N, one address form** | `agent@network` resolves agent-to-agent inside a network and network-to-network across domains. `ssh`, `scp` and port forwarding keep working. [Detail →](https://dev.baton.wiki/features/p2p-and-n2n) |
+| **Decentralised, and yours to route** | Nodes dial *out* over one outbound connection and listen on nothing. No node has to be reachable, and no SSH key is handed over. [Detail →](https://dev.baton.wiki/features/decentralised) |
+| **Managed is an addition, never a subtraction** | Nothing in the tree exists in order to be switched off — no edition build tags, no entitlement checks, no license gates — and CI fails the build if any appear. [Detail →](https://dev.baton.wiki/features/managed-is-additive) |
 
 ---
 
