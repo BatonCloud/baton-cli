@@ -4,7 +4,8 @@
 
 **Baton — Open-Source Agent & Network Runtime Framework**
 
-Turn AI agents into manageable runtime nodes.
+Run AI agents as isolated, persistent runtime nodes — on the laptop you already
+have, or on a server you own. Then connect those nodes into a network of your own.
 
 > **Pre-alpha. No compatibility is promised before v1.0.**
 > Command names, flags, file formats, and on-disk layout can change without a
@@ -30,88 +31,67 @@ software you cannot obtain.
 
 ---
 
-## The problem
+## What Baton solves
 
-```
-Monday      pip install something
-Tuesday     apt install something else
-Wednesday   rm -rf a directory that seemed unused
-Thursday    Claude Code: "something is broken"
-```
+Baton runs AI agents — Claude Code, Codex, OpenClaw and others — as **isolated,
+persistent runtime nodes**. Three problems, in the order you hit them:
 
-Nobody knows what changed. The environment drifted, one change at a time, and
-there is no way back. Meanwhile a second agent on the same machine needs Node 22
-while the first installed Node 24, and a third wants Python 3.10 against the
-fourth's 3.12 — so PATH, pip, npm and the interpreters all fight.
+- **Agents fighting over one machine.** Each gets its own node: its own filesystem, dependency tree and identity.
+- **Agents that cannot reach each other.** Nodes join a network of yours, and an agent is addressed by name rather than by host.
+- **Collaboration that costs you access.** Networks open to each other under a domain, without handing over a key.
 
-Then the questions nobody has a tool for: *which terminal is agent A in? does
-that node survive the laptop closing? how do I move it to a server?* And the one
-that arrives last and hurts longest — **the agent that works is on this machine,
-and the agent that needs it is on another one.**
+The first is built today. The other two are accepted decisions with no code
+behind them yet, and [what is built](https://dev.baton.wiki/status/) says so row
+by row.
 
----
+### Four agents on one machine, and their dependencies fight
 
-## Three things you can build
+One installed Node 24, one needs Node 22 — PATH, pip and the interpreters all
+fight, and nobody knows what changed.
 
-### 1 · An agent sandbox you fully control &nbsp;·&nbsp; **implemented**
+> **One isolated node per agent.**
+>
+> Own filesystem, own dependency tree, own identity. `baton attach` walks you
+> into its real terminal. It outlives the lid closing and the dropped tunnel.
+>
+> `Claude Code · Codex · OpenClaw · Hermes` — a runtime is declared by a spec
+> file, not compiled in. The first three are the ones exercised today.
 
-On your own laptop, or on a server you own. One node carries exactly one agent
-runtime — its own filesystem, workspace, dependency tree and identity — so the
-agent that wants Python 3.12 cannot reach the one that installed 3.10.
+### The agent that works is on the wrong machine
 
-`baton attach` walks you into its real terminal, read-only by default. The node
-is supervised and outlives the connection: the lid closes, the tunnel drops, the
-work carries on.
+Two separate installs that share nothing — not a name, not a message, not a
+file — so making them work together means copying things by hand.
 
-```
-Claude Code · Codex · OpenClaw · Hermes
-```
+> **One network, not eight installs.**
+>
+> Nodes find each other, share what they are allowed to, and pass messages.
+> `sales@your-network` addresses the *agent* — never the machine it sits on — so
+> a route survives the agent moving.
 
-A runtime is declared by a spec file, not compiled in. The first three are the
-ones exercised today; bringing another is a declaration, not a code change.
+### The people you want to work with are outside your network
 
-### 2 · A network of your own agents &nbsp;·&nbsp; **decided, not built**
+Working across two teams means handing over an API key, a shared server, or a
+copy of your workspace — each gives away more than the task needed.
 
-The two nodes on your laptop and the six on your server stop being eight
-separate installs and become one network: they find each other locally, share
-what they are allowed to share, and send each other messages.
+> **Publish the network.**
+>
+> Outside agents join under a domain, and one address form covers both cases:
+> whether the two agents share a laptop or two continents is a routing detail,
+> not a different API. Trust is the **signed descriptor**, not the server that
+> answered, and the resolver is replaceable, so nobody sits in the path by
+> default.
 
-Every agent carries a route identity of its own, so `sales@your-network`
-addresses the *agent* and never the machine it happens to be sitting on — and a
-human reaches it with the `ssh` they already have.
-
-Decided in full, and **no code behind it yet**: identity and inbox (ADR-0020),
-the relay a remote attach needs (ADR-0027), the address itself (ADR-0028).
-
-### 3 · A network you can make public &nbsp;·&nbsp; **decided, not built**
-
-Publish the network under a domain, and agents outside it can join and
-collaborate. One address form covers both cases: whether the two agents share a
-laptop or two continents is a routing detail, not a different API.
-
-What is trusted is the **signed descriptor**, not the server that returned it,
-and the resolver is replaceable — so no single party, ourselves included, sits
-in the path by default (ADR-0031).
-
-> **One of these three is built.** The sandbox is real and you can run it today.
-> The network and the public network are accepted decisions with no code behind
-> them yet. We publish the design before the code on purpose, because it is far
-> cheaper to argue with a decision than with a shipped mistake — but nothing
-> above should be read as available. The row-by-row table is at
-> <https://dev.baton.wiki/status/>.
-
-### The whole thing in four lines
-
-| | |
-|---|---|
-| **Declare the agent, declare the network** | A runtime is a YAML spec — image, command, session, secrets, health. Unknown fields are refused rather than quietly ignored. [Detail →](https://dev.baton.wiki/features/declare-agent-and-network) |
-| **P2P and N2N, one address form** | `agent@network` resolves agent-to-agent inside a network and network-to-network across domains. `ssh`, `scp` and port forwarding keep working. [Detail →](https://dev.baton.wiki/features/p2p-and-n2n) |
-| **Decentralised, and yours to route** | Nodes dial *out* over one outbound connection and listen on nothing. No node has to be reachable, and no SSH key is handed over. [Detail →](https://dev.baton.wiki/features/decentralised) |
-| **Managed is an addition, never a subtraction** | Nothing in the tree exists in order to be switched off — no edition build tags, no entitlement checks, no license gates — and CI fails the build if any appear. [Detail →](https://dev.baton.wiki/features/managed-is-additive) |
+**One of these three is built.** The first is real and you can run it today. The
+network and the public network are accepted decisions with no code behind them
+yet — we publish the design before the code on purpose, because it is far
+cheaper to argue with a decision than with a shipped mistake.
 
 ---
 
 ## Where Baton sits
+
+Applications call agents. Agents run inside a workspace. **Baton is what binds a
+workspace to the compute underneath it.**
 
 ```
   APPLICATIONS     Cursor · Copilot · Windsurf · Perplexity · Replit · LangChain
@@ -133,26 +113,33 @@ in the path by default (ADR-0031).
   LLM LAYER        ChatGPT · Claude · Gemini · DeepSeek · Kimi · GLM · Qwen
 ```
 
-> **Baton manages the runtime, never the intelligence.**
+> **One isolated node per agent. Baton creates them, watches them, holds their
+> identity — and never reads a prompt.**
 
-That is a boundary, not a slogan: it is what decides which features get built
-here and which ones are somebody else's product. Applications call agents.
-Agents run inside a workspace. **Baton is what binds a workspace to the compute
-underneath it** — and the compute binds *up* to Baton across the provider
-contract, which is why the machine underneath can be replaced without
-redesigning anything above it.
+The compute binds *up* to Baton across the provider contract, which is why the
+machine underneath can be replaced without redesigning anything above it.
 
 Baton owns identity, workspace, the runtime process, the container instance, the
 TTY, the filesystem, secrets, environment, lifecycle, health, logs — and, since
-ADR-0020, the delivery of a message from one agent to another.
-
-It does not own — and will not grow into — prompts, memory, context windows,
-reasoning, planning, tool selection, model or token choices, conversations,
-knowledge stores, or what any of those messages mean.
+ADR-0020, the delivery of a message from one agent to another. It does not own —
+and will not grow into — prompts, memory, context windows, reasoning, planning,
+tool selection, model or token choices, conversations, knowledge stores, or what
+any of those messages mean.
 
 ---
 
-## How? Three steps
+## Features
+
+| | |
+|---|---|
+| **Declare the agent, declare the network** | A runtime is a YAML spec — image, command, session, secrets, health. Unknown fields are refused rather than quietly ignored. [Detail →](https://dev.baton.wiki/features/declare-agent-and-network) |
+| **P2P and N2N, one address form** | `agent@network` resolves agent-to-agent inside a network and network-to-network across domains. `ssh`, `scp` and port forwarding keep working. [Detail →](https://dev.baton.wiki/features/p2p-and-n2n) |
+| **Decentralised, and yours to route** | Nodes dial *out* over one outbound connection and listen on nothing. No node has to be reachable, and no SSH key is handed over. [Detail →](https://dev.baton.wiki/features/decentralised) |
+| **Managed is an addition, never a subtraction** | Nothing in the tree exists in order to be switched off — no edition build tags, no entitlement checks, no license gates — and CI fails the build if any appear. [Detail →](https://dev.baton.wiki/features/managed-is-additive) |
+
+---
+
+## Quick start
 
 Installing the CLI, founding a network and creating a workspace are three
 different acts, and Baton keeps them apart on purpose.
@@ -190,8 +177,7 @@ the fourth step in the design and is **not implemented**.
 ```bash
 # for humans — the panel
 baton web              # mints a 60-second handoff from your operator cert and
-                       # opens a browser session. Read-only by construction:
-                       # today's console has no mutating API at all.
+                       # opens a browser session, read-only by construction
 
 baton attach codex01   # the real terminal, exactly as it looks locally.
                        # --takeover to type, under a lease, audited both ends.
@@ -250,6 +236,9 @@ Also true, and worth knowing before you form an opinion:
   workspace that outlives any single task, and a terminal you can walk into.
 - **Not "Kubernetes for AI agents."** Kubernetes schedules fungible, replaceable
   workloads. An agent is not fungible — it is the same agent after it moves.
+
+More of these, answered at length, in the
+[FAQ](https://dev.baton.wiki/#faq).
 
 ---
 
