@@ -34,13 +34,15 @@ software you cannot obtain.
 ## What Baton solves
 
 Baton runs AI agents — Claude Code, Codex, OpenClaw and others — as **isolated,
-persistent runtime nodes**. Three problems, in the order you hit them:
+persistent runtime nodes**, and then connects them. Four things, in the order
+you need them:
 
-- **Agents fighting over one machine.** Each gets its own node: its own filesystem, dependency tree and identity.
-- **Agents that cannot reach each other.** Nodes join a network of yours, and an agent is addressed by name rather than by host.
-- **Collaboration that costs you access.** Networks open to each other under a domain, without handing over a key.
+- **A secure sandbox per agent runtime.** Its own filesystem, dependency tree and identity.
+- **A local network between your agents.** They discover each other and message each other by name.
+- **Shared resources, collaboration, and experience that accumulates.** Templates, skills and documents move between agents; what they learn survives the task.
+- **Private and open networks, interconnected.** Agent-to-agent inside, network-to-network across.
 
-The first is built today. The other two are accepted decisions with no code
+The first is built today. The other three are accepted decisions with no code
 behind them yet, and [what is built](https://dev.baton.wiki/status/) says so row
 by row.
 
@@ -49,7 +51,7 @@ by row.
 One installed Node 24, one needs Node 22 — PATH, pip and the interpreters all
 fight, and nobody knows what changed.
 
-> **One isolated node per agent.**
+> **A secure, isolated sandbox per agent runtime.**
 >
 > Own filesystem, own dependency tree, own identity. `baton attach` walks you
 > into its real terminal. It outlives the lid closing and the dropped tunnel.
@@ -62,29 +64,46 @@ fight, and nobody knows what changed.
 Two separate installs that share nothing — not a name, not a message, not a
 file — so making them work together means copying things by hand.
 
-> **One network, not eight installs.**
+> **One local network, not eight installs.**
 >
-> Nodes find each other, share what they are allowed to, and pass messages.
-> `sales@your-network` addresses the *agent* — never the machine it sits on — so
-> a route survives the agent moving.
+> Nodes discover each other and pass messages. `sales@your-network` addresses
+> the *agent* — never the machine it sits on — so a route survives the agent
+> moving.
+
+### Every agent starts from zero, every time
+
+Isolation is the point, and it is also the cost: a skill you taught one agent, a
+document another wrote and the context a third built up are all stranded where
+they were made.
+
+> **Shared resources, real collaboration, and experience that accumulates.**
+>
+> - **Resources** — workspace templates, skills, knowledge-base documents.
+> - **Collaboration** — task tracking, workflow handoff, shared context.
+> - **Self-improvement** — task history that persists, collaboration experience
+>   that settles, skills that update themselves.
+>
+> Baton **carries and keeps** these. It does not read them: what a message
+> means, what happens next and which agent should act stay on the far side of
+> the line (ADR-0020, and ADR-0021 for why a body is an opaque payload). The
+> agents learn; Baton makes the place they learn in durable.
 
 ### The people you want to work with are outside your network
 
 Working across two teams means handing over an API key, a shared server, or a
 copy of your workspace — each gives away more than the task needed.
 
-> **Publish the network.**
+> **Private and open networks, interconnected.**
 >
-> Outside agents join under a domain, and one address form covers both cases:
-> whether the two agents share a laptop or two continents is a routing detail,
-> not a different API. Trust is the **signed descriptor**, not the server that
-> answered, and the resolver is replaceable, so nobody sits in the path by
-> default.
+> One address form covers both: whether the two agents share a laptop or two
+> continents is a routing detail, not a different API. Trust is the **signed
+> descriptor**, not the server that answered, and the resolver is replaceable,
+> so nobody sits in the path by default.
 
-**One of these three is built.** The first is real and you can run it today. The
-network and the public network are accepted decisions with no code behind them
-yet — we publish the design before the code on purpose, because it is far
-cheaper to argue with a decision than with a shipped mistake.
+**One of these four is built.** The sandbox is real and you can run it today.
+The network, the sharing layer and the open network are accepted decisions with
+no code behind them yet — we publish the design before the code on purpose,
+because it is far cheaper to argue with a decision than with a shipped mistake.
 
 ---
 
@@ -125,6 +144,21 @@ ADR-0020, the delivery of a message from one agent to another. It does not own �
 and will not grow into — prompts, memory, context windows, reasoning, planning,
 tool selection, model or token choices, conversations, knowledge stores, or what
 any of those messages mean.
+
+---
+
+## What Baton does not provide
+
+Four things Baton will not grow into. Each is a seam rather than a gap — it is
+where a partner plugs in, and it is the reason the layers above and below this
+one can be somebody else's product.
+
+| Not ours | Whose it is |
+|---|---|
+| **The agent's thinking** — prompts, memory, the context window, reasoning, planning, the task graph | The harness and the framework: Claude Code, Codex, OpenClaw, LangGraph, CrewAI |
+| **The model and the inference** — no model is called here, no token is spent here, no routing is done here | Whichever provider your harness is pointed at |
+| **The isolation and the compute** — no sandbox, no hypervisor, no scheduler of our own | Docker, microVMs, E2B, and any cloud you already pay for |
+| **The meaning of a skill or a document** — no skill format, no parser, no index. Baton moves the file and never opens it | MCP servers, skill registries, and the tools your agents already use |
 
 ---
 
