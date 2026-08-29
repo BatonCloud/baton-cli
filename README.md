@@ -7,6 +7,13 @@
 Run AI agents as isolated, persistent runtime nodes — on the laptop you already
 have, or on a server you own. Then connect those nodes into a network of your own.
 
+- **Isolated sandbox** — its own filesystem, dependencies, identity.
+- **Local networking** — agents reach each other by name.
+- **Shared resources** — templates, skills, documents, experience.
+- **Open interconnect** — private inside, open when you choose.
+
+> **Every agent its own node. Every node your network.**
+
 > **Pre-alpha. No compatibility is promised before v1.0.**
 > Command names, flags, file formats, and on-disk layout can change without a
 > deprecation period. There is no upgrade path between pre-1.0 versions.
@@ -31,53 +38,36 @@ software you cannot obtain.
 
 ---
 
-## What Baton solves
+## What does Baton solve?
 
-Baton runs AI agents — Claude Code, Codex, OpenClaw and others — as **isolated,
-persistent runtime nodes**, and then connects them. Four things, in the order
-you need them:
+Four problems, in the order you hit them. **The first is built today**; the
+other three are accepted decisions with no code behind them yet, and
+[what is built](https://dev.baton.wiki/status/) says so row by row.
 
-- **A secure sandbox per agent runtime.** Its own filesystem, dependency tree and identity.
-- **A local network between your agents.** They discover each other and message each other by name.
-- **Shared resources, collaboration, and experience that accumulates.** Templates, skills and documents move between agents; what they learn survives the task.
-- **Private and open networks, interconnected.** Agent-to-agent inside, network-to-network across.
+### A secure, isolated sandbox for every agent runtime
 
-The first is built today. The other three are accepted decisions with no code
-behind them yet, and [what is built](https://dev.baton.wiki/status/) says so row
-by row.
+One agent installed Node 24, the next needs Node 22, a third wants Python 3.10
+against a fourth's 3.12 — and nobody knows what changed.
 
-### Four agents on one machine, and their dependencies fight
+> One node carries exactly one agent runtime: its own filesystem, dependency
+> tree and identity. `baton attach` walks you into its real terminal, read-only
+> by default. It outlives the lid closing and the dropped tunnel.
 
-One installed Node 24, one needs Node 22 — PATH, pip and the interpreters all
-fight, and nobody knows what changed.
+### A local network your agents find each other on
 
-> **A secure, isolated sandbox per agent runtime.**
->
-> Own filesystem, own dependency tree, own identity. `baton attach` walks you
-> into its real terminal. It outlives the lid closing and the dropped tunnel.
->
-> `Claude Code · Codex · OpenClaw · Hermes` — a runtime is declared by a spec
-> file, not compiled in. The first three are the ones exercised today.
+The agent that works is on this laptop; the one that needs it is on the server.
+Two installs that share nothing — not a name, not a message, not a file.
 
-### The agent that works is on the wrong machine
-
-Two separate installs that share nothing — not a name, not a message, not a
-file — so making them work together means copying things by hand.
-
-> **One local network, not eight installs.**
->
 > Nodes discover each other and pass messages. `sales@your-network` addresses
 > the *agent* — never the machine it sits on — so a route survives the agent
-> moving.
+> moving, and a human reaches it with the `ssh` they already have.
 
-### Every agent starts from zero, every time
+### Shared resources, real collaboration, and experience that accumulates
 
 Isolation is the point, and it is also the cost: a skill you taught one agent, a
 document another wrote and the context a third built up are all stranded where
 they were made.
 
-> **Shared resources, real collaboration, and experience that accumulates.**
->
 > - **Resources** — workspace templates, skills, knowledge-base documents.
 > - **Collaboration** — task tracking, workflow handoff, shared context.
 > - **Self-improvement** — task history that persists, collaboration experience
@@ -88,14 +78,12 @@ they were made.
 > the line (ADR-0020, and ADR-0021 for why a body is an opaque payload). The
 > agents learn; Baton makes the place they learn in durable.
 
-### The people you want to work with are outside your network
+### Private and open networks, interconnected
 
 Working across two teams means handing over an API key, a shared server, or a
 copy of your workspace — each gives away more than the task needed.
 
-> **Private and open networks, interconnected.**
->
-> One address form covers both: whether the two agents share a laptop or two
+> One address form covers both — whether the two agents share a laptop or two
 > continents is a routing detail, not a different API. Trust is the **signed
 > descriptor**, not the server that answered, and the resolver is replaceable,
 > so nobody sits in the path by default.
