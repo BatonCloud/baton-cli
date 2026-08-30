@@ -7,10 +7,11 @@
 Run AI agents as isolated, persistent runtime nodes — on the laptop you already
 have, or on a server you own. Then connect those nodes into a network of your own.
 
-- **Isolated sandbox** — its own filesystem, dependencies, identity.
-- **Local networking** — agents reach each other by name.
-- **Shared resources** — templates, skills, documents, experience.
-- **Open interconnect** — private inside, open when you choose.
+- **Isolated sandbox** — one agent runtime per node: its own filesystem, dependencies, identity.
+- **Composable stack** — swap the harness, keep the workspace.
+- **Work that accumulates** — a run's output can become part of the setup.
+- **Agents that coordinate** — reached by name, handed work, sending results back.
+- **Networks that interconnect** — private inside, open when you choose.
 
 > **Every agent its own node. Every node your network.**
 
@@ -40,58 +41,85 @@ software you cannot obtain.
 
 ## What does Baton solve?
 
-Four problems, in the order you hit them. **The first is built today**; the
-other three are accepted decisions with no code behind them yet, and
-[what is built](https://dev.baton.wiki/status/) says so row by row.
+Five layers, and the order is the argument: each only means something once the
+one above it exists. An agent needs somewhere to live before its assets can be
+portable; assets have to be portable before work can accumulate in them;
+accumulation has to exist before sharing it is worth anything.
 
-### A secure, isolated sandbox for every agent runtime
+### 1 · Build once → Run anywhere → Keep it running 24/7
 
 One agent installed Node 24, the next needs Node 22, a third wants Python 3.10
-against a fourth's 3.12 — and nobody knows what changed.
+against a fourth's 3.12 — and nobody knows what changed. Then the laptop closes,
+or the work has to move to a server, and it all starts again.
 
-> One node carries exactly one agent runtime: its own filesystem, dependency
+> A workspace carries exactly one agent runtime: its own filesystem, dependency
 > tree and identity. `baton attach` walks you into its real terminal, read-only
-> by default. It outlives the lid closing and the dropped tunnel.
+> by default, and it is supervised, so it outlives the lid closing and the
+> dropped tunnel. The workspace is the unit that travels — **the machine under
+> it is a provider you can replace.**
+>
+> `Workspace` · `Template` · `Snapshot` · `Restore` · `Migration` · `Local & Cloud Node`
 
-### A local network your agents find each other on
+### 2 · Switch harness, model, skills and config in one place
+
+Your instructions, skills, MCP setup and working conventions live inside Claude
+Code — or inside Codex, or inside a repo. Switch harness and you rebuild all of
+it, because the assets belong to the tool rather than to you.
+
+> The workspace is the stable layer and the harness is a driver. Config,
+> resources, secrets and files sit in the workspace; Claude Code, Codex and
+> OpenClaw are three ways to drive it, declared by a spec file rather than
+> compiled in. **Baton moves and versions these things; it never opens them.**
+>
+> `Harness Adapter` · `Runtime Config` · `Model` · `Skills` · `Resources`
+
+### 3 · A workspace that improves itself
+
+Isolation is the point and also the cost: a convention you taught one agent, a
+document another wrote and the context a third built up are all stranded where
+they were made. Every task starts clever and the workspace never gets smarter.
+
+> A run's output lands in the workspace, not in a chat log, and from there it
+> can be kept, versioned and promoted into the workspace's own configuration and
+> resources. Deciding which output was good enough to keep is the agent's
+> judgement and yours; Baton's job is that the place it accumulates in survives
+> the run, the machine and the harness.
+>
+> `Output` → `Evaluate` → `Promote` → `Config` / `Skill` / `Knowledge` / `Workflow`
+
+### 4 · Communicate & Coordinate
 
 The agent that works is on this laptop; the one that needs it is on the server.
-Two installs that share nothing — not a name, not a message, not a file.
+Two installs that share nothing. And with five agents you cannot see which is
+working, which is idle, and which is waiting on you.
 
-> Nodes discover each other and pass messages. `sales@your-network` addresses
-> the *agent* — never the machine it sits on — so a route survives the agent
-> moving, and a human reaches it with the `ssh` they already have.
-
-### Shared resources, real collaboration, and experience that accumulates
-
-Isolation is the point, and it is also the cost: a skill you taught one agent, a
-document another wrote and the context a third built up are all stranded where
-they were made.
-
-> - **Resources** — workspace templates, skills, knowledge-base documents.
-> - **Collaboration** — task tracking, workflow handoff, shared context.
-> - **Self-improvement** — task history that persists, collaboration experience
->   that settles, skills that update themselves.
+> Nodes discover each other and pass work. `sales@your-network` addresses the
+> *agent* — never the machine it sits on. A message carries a request, its
+> context, the resources it refers to and the output it produced: a work
+> protocol, not a chat. **Baton moves the envelope and never decides what
+> happens next.**
 >
-> Baton **carries and keeps** these. It does not read them: what a message
-> means, what happens next and which agent should act stay on the far side of
-> the line (ADR-0020, and ADR-0021 for why a body is an opaque payload). The
-> agents learn; Baton makes the place they learn in durable.
+> `Identity` · `State` · `Inbox` · `Request` · `Result` · `Shared Resources`
 
-### Private and open networks, interconnected
+### 5 · Experience that compounds across the network
 
 Working across two teams means handing over an API key, a shared server, or a
-copy of your workspace — each gives away more than the task needed.
+copy of your workspace — each gives away more than the task needed. So every
+organisation's agents research the same things and learn the same lessons.
 
-> One address form covers both — whether the two agents share a laptop or two
-> continents is a routing detail, not a different API. Trust is the **signed
-> descriptor**, not the server that answered, and the resolver is replaceable,
-> so nobody sits in the path by default.
+> One address form covers both cases. Trust is the **signed descriptor**, not
+> the server that answered, and the resolver is replaceable, so nobody sits in
+> the path by default. Once a skill or a document can be addressed and trusted
+> across a boundary, the experience one agent accumulated stops being trapped in
+> the workspace that produced it.
+>
+> `Discovery` · `Sharing` · `Provenance` · `Federation` · `Network Resources`
 
-**One of these four is built.** The sandbox is real and you can run it today.
-The network, the sharing layer and the open network are accepted decisions with
-no code behind them yet — we publish the design before the code on purpose,
-because it is far cheaper to argue with a decision than with a shipped mistake.
+**One of these five is built.** The sandbox is real and you can run it today.
+The rest are accepted decisions with no code behind them yet — we publish the
+design before the code on purpose, because it is far cheaper to argue with a
+decision than with a shipped mistake. The row-by-row table is under
+[Status](#status--what-exists-today).
 
 ---
 
@@ -297,7 +325,16 @@ the code; it does not grant rights to the marks. See
 
 ---
 
-## Contributing
+## Community and contributing
+
+Baton is Apache-2.0, developed in the open, and contributed to under the
+[DCO](https://developercertificate.org/) — `git commit -s`, and no CLA.
+
+| | |
+|---|---|
+| **Repository** | [BatonCloud/baton-cli](https://github.com/BatonCloud/baton-cli) — documentation and licensing today; the CLI source once the publication gates clear. |
+| **Argue with a decision** | [Issues](https://github.com/BatonCloud/baton-cli/issues). Every decision record states what it costs. If one is wrong, that is the conversation to have. |
+| **Chat, and who is using it** | Not yet. A discussion room and an adopters list go here when they exist — this project does not print social proof it does not have. |
 
 Contributions to the documentation and translations in this repository are
 welcome now. See [`CONTRIBUTING.md`](CONTRIBUTING.md) — commits are signed off
