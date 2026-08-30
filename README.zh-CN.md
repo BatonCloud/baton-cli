@@ -100,7 +100,7 @@ context，全都被困在它们各自产生的地方。
         │
         │  Runs ↓
         │
-  Agent 层         Claude Code · Codex · OpenClaw · Hermes
+  Harness 层       Claude Code · Codex · OpenClaw · Hermes
         │
         │  Inference API ↓
         │

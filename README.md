@@ -113,7 +113,7 @@ workspace to the compute underneath it.**
         │
         │  Runs ↓
         │
-  AGENT HARNESS    Claude Code · Codex · OpenClaw · Hermes
+  HARNESS LAYER    Claude Code · Codex · OpenClaw · Hermes
         │
         │  Inference API ↓
         │
